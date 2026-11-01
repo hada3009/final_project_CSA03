@@ -26,7 +26,6 @@ if c != "ALL":
 
 df_test = df_test.reset_index(drop=True)
 st.dataframe(df_test.iloc[:,:14])
-
 isco_exposure_mapping = {
     "Software and applications developers": 0.85,
     "Mathematicians, actuaries and statisticians": 0.76,
@@ -37,6 +36,20 @@ isco_exposure_mapping = {
 }
 df_test['isco_group_hint'] = df_test['isco_group_hint'].fillna("Other / Unclassified")
 df_test['ai_exposure_score'] = df_test['isco_group_hint'].map(isco_exposure_mapping)
+avg_salary = df_test['salary_in_usd'].mean()
+job_count = len(df_test)
+
+col1=st.columns()
+
+with col1:
+    st.metric(f"Average salary({a})",f"${avg_salary:,.0f} USD",f"{job_count} analysed profile","normal")
+    st.metric("Experience level",b)
+if df_test['ai_exposure_score']> 75:
+    st.error(f"{df_test['ai_exposure_score']:.1f}%, high exposure job")
+elif 40 <=df_test['ai_exposure_score']<= 75:
+    st.warning(f"{df_test['ai_exposure_score']:.1f}%, moderate exposure job")
+else:
+    st.success(f"{df_test['ai_exposure_score']:.1f}%, low exposure job")
 
 st.dataframe(df_test.groupby('isco_group_hint')['ai_exposure_score'].first().reset_index())
 
