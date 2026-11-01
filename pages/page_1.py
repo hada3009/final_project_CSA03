@@ -14,6 +14,7 @@ with st.sidebar:
     a=st.selectbox("employee residence",["ALL"] + sorted(df["employee_residence"].unique().tolist()))
     b=st.selectbox("experience",["ALL"] + sorted(df["experience_level"].unique().tolist()))
     c=st.selectbox("job title",["ALL"] + sorted(df["job_title"].unique().tolist()))
+    d=st.number_input("your salary in us dollar")
 
 df_test = df.copy()
 
@@ -37,19 +38,23 @@ isco_exposure_mapping = {
 df_test['isco_group_hint'] = df_test['isco_group_hint'].fillna("Other / Unclassified")
 df_test['ai_exposure_score'] = df_test['isco_group_hint'].map(isco_exposure_mapping)
 avg_salary = df_test['salary_in_usd'].mean()
+aec=df_test['ai_exposure_score'].mean()*100
 job_count = len(df_test)
 
-col1=st.columns()
+col1,col2,col3=st.columns(3,gap="small")
 
 with col1:
-    st.metric(f"Average salary({a})",f"${avg_salary:,.0f} USD",f"{job_count} analysed profile","normal")
+    st.metric(f"Average salary({a})",f"${avg_salary:,.0f} USD",f"{(avg_salary-d):.0f} compared to yours")
+with col2:
+    st.metric("Analysed profile",f"{job_count}")
+with col3:
     st.metric("Experience level",b)
-if df_test['ai_exposure_score']> 75:
-    st.error(f"{df_test['ai_exposure_score']:.1f}%, high exposure job")
-elif 40 <=df_test['ai_exposure_score']<= 75:
-    st.warning(f"{df_test['ai_exposure_score']:.1f}%, moderate exposure job")
+if aec> 75:
+    st.error(f"{aec:.1f}%, high exposure job")
+elif 40 <=aec<= 75:
+    st.warning(f"{aec:.1f}%, moderate exposure job")
 else:
-    st.success(f"{df_test['ai_exposure_score']:.1f}%, low exposure job")
+    st.success(f"{aec:.1f}%, low exposure job")
 
 st.dataframe(df_test.groupby('isco_group_hint')['ai_exposure_score'].first().reset_index())
 
