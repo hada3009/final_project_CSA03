@@ -12,8 +12,9 @@ st.markdown('<p style="font-size:30px">1. Is my career track high-paying but at 
 with st.sidebar:
     a=st.selectbox("employee_residence",["US","CA"])
 
-df_test=pd.read_csv("ai_jobs_salaries_clean.csv")
-st.dataframe(df_test[df_test["employee_residence"] == a].reset_index())
+df=pd.read_csv("ai_jobs_salaries_clean.csv")
+df_test=df[df["employee_residence"] == a].reset_index()
+st.dataframe(df_test)
 
 isco_exposure_mapping = {
     "Software and applications developers": 0.85,
