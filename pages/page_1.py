@@ -11,7 +11,7 @@ st.markdown('<p style="font-size:30px">1. Is my career track high-paying but at 
 
 df=pd.read_csv("ai_jobs_salaries_clean.csv")
 with st.sidebar:
-    a=st.selectbox("employee_residence",["ALL"]+df[['employee_residence']].drop_duplicates().reset_index(drop=True))
+    a=st.selectbox("employee_residence",["ALL"] + sorted(df["employee_residence"].unique().tolist()))
 if a == "ALL":
     df_test = df.reset_index(drop=True)
 else:
