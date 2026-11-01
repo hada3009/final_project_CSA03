@@ -11,7 +11,7 @@ st.markdown('<p style="font-size:30px">1. Is my career track high-paying but at 
 
 df=pd.read_csv("ai_jobs_salaries_clean.csv")
 with st.sidebar:
-    a=st.selectbox("employee_residence",[df["employee_residence"]])
+    a=st.selectbox("employee_residence",df["employee_residence"])
 df_test=df[df["employee_residence"] == a].reset_index()
 st.dataframe(df_test)
 
