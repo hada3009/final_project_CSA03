@@ -9,10 +9,9 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 st.markdown('<p style="font-size:30px">1. Is my career track high-paying but at high risk of being automated?</p>',unsafe_allow_html=True)
 
-with st.sidebar:
-    a=st.selectbox("employee_residence",["US","CA"])
-
 df=pd.read_csv("ai_jobs_salaries_clean.csv")
+with st.sidebar:
+    a=st.selectbox("employee_residence",[df["employee_residence"]])
 df_test=df[df["employee_residence"] == a].reset_index()
 st.dataframe(df_test)
 
