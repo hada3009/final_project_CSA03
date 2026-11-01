@@ -10,7 +10,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 st.markdown('<p style="font-size:30px">1. Is my career track high-paying but at high risk of being automated?</p>',unsafe_allow_html=True)
 
 with st.sidebar:
-    a=st.select_slider("region",['US','CA'])
+    a=st.selectbox("region",['US','CA'])
 
 df_test=pd.read_csv("ai_jobs_salaries_clean.csv")
 
