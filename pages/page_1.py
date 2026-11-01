@@ -13,6 +13,7 @@ df=pd.read_csv("ai_jobs_salaries_clean.csv")
 with st.sidebar:
     a=st.selectbox("employee residence",["ALL"] + sorted(df["employee_residence"].unique().tolist()))
     b=st.selectbox("experience",["ALL"] + sorted(df["experience_level"].unique().tolist()))
+    c=st.selectbox("job title",["ALL"] + sorted(df["job_title"].unique().tolist()))
 
 df_test = df.copy()
 
@@ -20,6 +21,8 @@ if a != "ALL":
   df_test = df_test[df_test["employee_residence"] == a]
 if b != "ALL":
   df_test = df_test[df_test["experience_level"] == b]
+if c != "ALL":
+  df_test = df_test[df_test["job_title"] == c]
 
 df_test = df_test.reset_index(drop=True)
 st.dataframe(df_test.iloc[:,:14])
