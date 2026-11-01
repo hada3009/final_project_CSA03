@@ -10,10 +10,10 @@ from sklearn.metrics import mean_squared_error, r2_score
 st.markdown('<p style="font-size:30px">1. Is my career track high-paying but at high risk of being automated?</p>',unsafe_allow_html=True)
 
 with st.sidebar:
-    a=st.selectbox("region",['US','CA'])
+    a=st.selectbox("employee_residence",["US","CA"])
 
 df_test=pd.read_csv("ai_jobs_salaries_clean.csv")
-st.dataframe(df_test.groupby('employee_residence').get_group(a))
+st.dataframe(df_test[df_test["employee_residence"] == a])
 
 isco_exposure_mapping = {
     "Software and applications developers": 0.85,
