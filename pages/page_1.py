@@ -22,7 +22,7 @@ if b != "ALL":
   df_test = df_test[df_test["experience_level"] == b]
 
 df_test = df_test.reset_index(drop=True)
-st.dataframe(df_test)
+st.dataframe(df_test.iloc[:,:14])
 
 isco_exposure_mapping = {
     "Software and applications developers": 0.85,
