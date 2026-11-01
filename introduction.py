@@ -32,8 +32,18 @@ st.markdown(
     """, 
     unsafe_allow_html=True
 )
+with st.sidebar:
+    select=st.multiselect(
+        "select",
+        ["Job Title","Experience Level","Employment Type"]
+    )
+    a = st.radio("are you ",("A","B","C"))
 
-df_test=pd.read_csv("ai_jobs_salaries_clean.csv")
+@st.cache_data
+def load_data():
+  return pd.read_csv("ai_jobs_salaries_clean.csv")
+df_test = load_data()
+
 st.dataframe(df_test.iloc[:,:14])
 
 isco_exposure_mapping = {
@@ -46,9 +56,3 @@ isco_exposure_mapping = {
 }
 df_test['isco_group_hint'] = df_test['isco_group_hint'].fillna("Other / Unclassified")
 df_test['ai_exposure_score'] = df_test['isco_group_hint'].map(isco_exposure_mapping)
-with st.sidebar:
-    select=st.multiselect(
-        "select",
-        ["Job Title","Experience Level","Employment Type"]
-    )
-    a = st.radio("are you ",("A","B","C"))
