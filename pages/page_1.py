@@ -14,7 +14,8 @@ with st.sidebar:
     a=st.selectbox("employee residence",["ALL"] + sorted(df["employee_residence"].unique().tolist()))
     b=st.selectbox("experience",["ALL"] + sorted(df["experience_level"].unique().tolist()))
     c=st.selectbox("job title",["ALL"] + sorted(df["job_title"].unique().tolist()))
-    d=st.number_input("your salary in us dollar")
+    d=st.radio("Company Size", ["ALL","S", "M", "L"])
+    e=st.number_input("your salary in us dollar")
 
 df_test = df.copy()
 
@@ -24,6 +25,8 @@ if b != "ALL":
   df_test = df_test[df_test["experience_level"] == b]
 if c != "ALL":
   df_test = df_test[df_test["job_title"] == c]
+if d != "ALL":
+  df_test = df_test[df_test["company_size"] == d]
 
 df_test = df_test.reset_index(drop=True)
 st.dataframe(df_test.iloc[:,:14])
@@ -38,26 +41,29 @@ isco_exposure_mapping = {
 df_test['isco_group_hint'] = df_test['isco_group_hint'].fillna("Other / Unclassified")
 df_test['ai_exposure_score'] = df_test['isco_group_hint'].map(isco_exposure_mapping)
 avg_salary = df_test['salary_in_usd'].mean()
-aec=df_test['ai_exposure_score'].mean()*100
+aes=df_test['ai_exposure_score'].mean()*100
 job_count = len(df_test)
 
 col1,col2,col3=st.columns(3,gap="small")
 
 with col1:
-    st.metric(f"Average salary({a})",f"${avg_salary:,.0f} USD",f"{(avg_salary-d):.0f} compared to yours")
+    st.metric(f"Average salary({a})",f"${avg_salary:,.0f} USD",f"{(avg_salary-e):,.0f} compared to yours")
 with col2:
-    st.metric("Analysed profile",f"{job_count}")
+    st.metric("Analysed profile",f"{job_count:,d}")
 with col3:
     st.metric("Experience level",b)
-if aec> 75:
-    st.error(f"{aec:.1f}%, high exposure job")
-elif 40 <=aec<= 75:
-    st.warning(f"{aec:.1f}%, moderate exposure job")
+if aes> 75:
+    st.error(f"{aes:.1f}%, high exposure job")
+elif 40 <=aes<= 75:
+    st.warning(f"{aes:.1f}%, moderate exposure job")
 else:
-    st.success(f"{aec:.1f}%, low exposure job")
+    st.success(f"{aes:.1f}%, low exposure job")
 
 st.dataframe(df_test.groupby('isco_group_hint')['ai_exposure_score'].first().reset_index())
 
+yearly_avg = df_test.groupby('work_year')['salary_in_usd'].mean().reset_index()
+st.line_chart(yearly_avg,x='work_year',y='salary_in_usd')
+st.write("gfgghkjh")
 salary_cutoff = df_test["salary_in_usd"].median()
 risk_cutoff = 0.50
 
