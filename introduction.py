@@ -4,6 +4,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+@st.cache_data
+def load_data():
+  return pd.read_csv("ai_jobs_salaries_clean.csv")
+df_test = load_data()
+
+st.dataframe(df_test.iloc[:,:14])
+
+isco_exposure_mapping = {
+    "Software and applications developers": 0.85,
+    "Mathematicians, actuaries and statisticians": 0.76,
+    "Business services and administration managers": 0.55,
+    "Information and communications technology service managers": 0.45,
+    "Physical and earth science professionals": 0.35,
+    "Other / Unclassified": 0.50
+}
+df_test['isco_group_hint'] = df_test['isco_group_hint'].fillna("Other / Unclassified")
+df_test['ai_exposure_score'] = df_test['isco_group_hint'].map(isco_exposure_mapping)
+
+
+
 st.markdown(
     """
     <style>
@@ -38,21 +58,3 @@ with st.sidebar:
         ["Job Title","Experience Level","Employment Type"]
     )
     a = st.radio("are you ",("A","B","C"))
-
-@st.cache_data
-def load_data():
-  return pd.read_csv("ai_jobs_salaries_clean.csv")
-df_test = load_data()
-
-st.dataframe(df_test.iloc[:,:14])
-
-isco_exposure_mapping = {
-    "Software and applications developers": 0.85,
-    "Mathematicians, actuaries and statisticians": 0.76,
-    "Business services and administration managers": 0.55,
-    "Information and communications technology service managers": 0.45,
-    "Physical and earth science professionals": 0.35,
-    "Other / Unclassified": 0.50
-}
-df_test['isco_group_hint'] = df_test['isco_group_hint'].fillna("Other / Unclassified")
-df_test['ai_exposure_score'] = df_test['isco_group_hint'].map(isco_exposure_mapping)
