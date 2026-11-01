@@ -13,6 +13,7 @@ with st.sidebar:
     a=st.selectbox("region",['US','CA'])
 
 df_test=pd.read_csv("ai_jobs_salaries_clean.csv")
+st.dataframe(df_test.groupby('employee_residence').get_group(a))
 
 isco_exposure_mapping = {
     "Software and applications developers": 0.85,
