@@ -11,8 +11,11 @@ st.markdown('<p style="font-size:30px">1. Is my career track high-paying but at 
 
 df=pd.read_csv("ai_jobs_salaries_clean.csv")
 with st.sidebar:
-    a=st.selectbox("employee_residence",df[['employee_residence']].drop_duplicates().reset_index(drop=True))
-df_test=df[df["employee_residence"] == a].reset_index()
+    a=st.selectbox("employee_residence",["ALL"]+df[['employee_residence']].drop_duplicates().reset_index(drop=True))
+if a == "ALL":
+    df_test = df.reset_index(drop=True)
+else:
+    df_test = df[df["employee_residence"] == a].reset_index(drop=True)
 st.dataframe(df_test)
 
 isco_exposure_mapping = {
