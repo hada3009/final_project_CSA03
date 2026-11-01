@@ -64,7 +64,7 @@ sns.scatterplot(
     y="salary_in_usd",
     hue="select",
     palette=palette_colors,
-    s=100,
+    s=140,
     edgecolor="black",
     ax=ax,
 )
