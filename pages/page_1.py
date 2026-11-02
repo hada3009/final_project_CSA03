@@ -9,13 +9,26 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 st.markdown('<p style="font-size:30px">1. Is my career track high-paying but at high risk of being automated?</p>',unsafe_allow_html=True)
 
-df=pd.read_csv("ai_jobs_salaries_clean.csv")
+@st.cache_data
+def load_data():
+  return pd.read_csv("ai_jobs_salaries_clean.csv")
+df = load_data()
 with st.sidebar:
     a=st.selectbox("employee residence",["ALL"] + sorted(df["employee_residence"].unique().tolist()))
     b=st.selectbox("experience",["ALL"] + sorted(df["experience_level"].unique().tolist()))
     c=st.selectbox("job title",["ALL"] + sorted(df["job_title"].unique().tolist()))
     d=st.radio("Company Size", ["ALL","S", "M", "L"])
-    e=st.number_input("your salary in us dollar")
+
+isco_exposure_mapping = {
+    "Software and applications developers": 0.85,
+    "Mathematicians, actuaries and statisticians": 0.76,
+    "Business services and administration managers": 0.55,
+    "Information and communications technology service managers": 0.45,
+    "Physical and earth science professionals": 0.35,
+    "Other / Unclassified": 0.50
+}
+df['isco_group_hint'] = df['isco_group_hint'].fillna("Other / Unclassified")
+df['ai_exposure_score'] = df['isco_group_hint'].map(isco_exposure_mapping)
 
 df_test = df.copy()
 
@@ -30,40 +43,8 @@ if d != "ALL":
 
 df_test = df_test.reset_index(drop=True)
 st.dataframe(df_test.iloc[:,:14])
-isco_exposure_mapping = {
-    "Software and applications developers": 0.85,
-    "Mathematicians, actuaries and statisticians": 0.76,
-    "Business services and administration managers": 0.55,
-    "Information and communications technology service managers": 0.45,
-    "Physical and earth science professionals": 0.35,
-    "Other / Unclassified": 0.50
-}
-df_test['isco_group_hint'] = df_test['isco_group_hint'].fillna("Other / Unclassified")
-df_test['ai_exposure_score'] = df_test['isco_group_hint'].map(isco_exposure_mapping)
-avg_salary = df_test['salary_in_usd'].mean()
-aes=df_test['ai_exposure_score'].mean()*100
-job_count = len(df_test)
 
-col1,col2,col3=st.columns(3,gap="small")
-
-with col1:
-    st.metric(f"Average salary({a})",f"${avg_salary:,.0f} USD",f"{(avg_salary-e):,.0f} compared to yours")
-with col2:
-    st.metric("Analysed profile",f"{job_count:,d}")
-with col3:
-    st.metric("Experience level",b)
-if aes> 75:
-    st.error(f"{aes:.1f}%, high exposure job")
-elif 40 <=aes<= 75:
-    st.warning(f"{aes:.1f}%, moderate exposure job")
-else:
-    st.success(f"{aes:.1f}%, low exposure job")
-
-st.dataframe(df_test.groupby('isco_group_hint')['ai_exposure_score'].first().reset_index())
-
-yearly_avg = df_test.groupby('work_year')['salary_in_usd'].mean().reset_index()
-st.line_chart(yearly_avg,x='work_year',y='salary_in_usd')
-st.write("gfgghkjh")
+st.dataframe(df.groupby('isco_group_hint')['ai_exposure_score'].first().reset_index())
 salary_cutoff = df_test["salary_in_usd"].median()
 risk_cutoff = 0.50
 

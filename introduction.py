@@ -7,18 +7,7 @@ import seaborn as sns
 @st.cache_data
 def load_data():
   return pd.read_csv("ai_jobs_salaries_clean.csv")
-df_test = load_data()
-
-isco_exposure_mapping = {
-    "Software and applications developers": 0.85,
-    "Mathematicians, actuaries and statisticians": 0.76,
-    "Business services and administration managers": 0.55,
-    "Information and communications technology service managers": 0.45,
-    "Physical and earth science professionals": 0.35,
-    "Other / Unclassified": 0.50
-}
-df_test['isco_group_hint'] = df_test['isco_group_hint'].fillna("Other / Unclassified")
-df_test['ai_exposure_score'] = df_test['isco_group_hint'].map(isco_exposure_mapping)
+df = load_data()
 
 st.markdown(
     """
@@ -48,11 +37,11 @@ st.markdown(
     """, 
     unsafe_allow_html=True
 )
-df=pd.read_csv("ai_jobs_salaries_clean.csv")
 with st.sidebar:
     a=st.selectbox("employee residence",["ALL"] + sorted(df["employee_residence"].unique().tolist()))
     b=st.selectbox("experience",["ALL"] + sorted(df["experience_level"].unique().tolist()))
     c=st.selectbox("job title",["ALL"] + sorted(df["job_title"].unique().tolist()))
+    d=st.radio("Company Size", ["ALL","S", "M", "L"])
 
 df_test = df.copy()
 
@@ -62,6 +51,8 @@ if b != "ALL":
   df_test = df_test[df_test["experience_level"] == b]
 if c != "ALL":
   df_test = df_test[df_test["job_title"] == c]
-
+if d != "ALL":
+  df_test = df_test[df_test["company_size"] == d]
 df_test = df_test.reset_index(drop=True)
+
 st.dataframe(df_test.iloc[:,:14])
