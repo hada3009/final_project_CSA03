@@ -1,11 +1,10 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score
+
+st.markdown('<p style="font-size:30px">2. What is your true market value in the AI job market, and where is your career heading?</p>',unsafe_allow_html=True)
 
 @st.cache_data
 def load_data():
@@ -14,8 +13,8 @@ df = load_data()
 
 with st.sidebar:
     a=st.selectbox("employee residence",["ALL"] + sorted(df["employee_residence"].unique().tolist()))
-    b=st.selectbox("experience",sorted(df["experience_level"].unique().tolist()))
-    c=st.selectbox("job title",sorted(df["job_title"].unique().tolist()))
+    b=st.selectbox("experience",["ALL"]+sorted(df["experience_level"].unique().tolist()))
+    c=st.selectbox("job title",(df["job_title"].unique().tolist()))
     d=st.radio("Company Size", ["ALL","S", "M", "L"])
 
 isco_exposure_mapping = {
@@ -33,6 +32,9 @@ df_test = df.copy()
 
 if a != "ALL":
   df_test = df_test[df_test["employee_residence"] == a]
+if b != "ALL":    
+    df_test = df_test[df_test["experience_level"] == b]
+df_test = df_test[df_test["job_title"] == c]
 if d != "ALL":
   df_test = df_test[df_test["company_size"] == d]
 
@@ -40,18 +42,17 @@ df_test = df_test.reset_index(drop=True)
 
 e=st.number_input("your salary in us dollar")
 
-avg_salary = df_test['salary_in_usd'].mean()
 aes=df_test['ai_exposure_score'].mean()*100
-job_count = len(df_test)
 
-col1,col2,col3=st.columns(3,gap="small")
+col1,col2,col3=st.columns(3)
 
 with col1:
-    st.metric(f"Average salary({a})",f"${avg_salary:,.0f} USD",f"{(avg_salary-e):,.0f} compared to yours")
+    st.metric(f"Average salary({a})",f"${df_test['salary_in_usd'].mean():,.0f} USD",f"{(df_test['salary_in_usd'].mean()-e):,.0f} compared to yours")
 with col2:
-    st.metric("Analysed profile",f"{job_count:,d}")
+    st.metric("Analysed profile",f"{len(df_test):,d}")
 with col3:
     st.metric("Experience level",b)
+
 if aes> 75:
     st.error(f"{aes:.1f}%, high exposure job")
 elif 40 <=aes<= 75:
@@ -59,8 +60,8 @@ elif 40 <=aes<= 75:
 else:
     st.success(f"{aes:.1f}%, low exposure job")
 
-X = pd.get_dummies(df[['experience_level','ai_exposure_score']], columns=['experience_level'], drop_first=True)
-y = df['salary_in_usd']
+X = pd.get_dummies(df_test[['experience_level','ai_exposure_score']], columns=['experience_level'])
+y = df_test['salary_in_usd']
 
 model = LinearRegression()
 model.fit(X, y)
@@ -88,4 +89,4 @@ ax.set_ylabel("Density")
 st.pyplot(fig)
 
 yearly_avg = df_test.groupby('work_year')['salary_in_usd'].mean().reset_index()
-st.line_chart(yearly_avg,x='work_year',y='salary_in_usd')
+st.line_chart(yearly_avg,x='work_year',y='salary_in_usd',x_label="work year",y_label="salary in usd")
